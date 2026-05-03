@@ -195,3 +195,13 @@ select option:focus {
   }
 
   #swap {
+    
+body::before {
+    content: "🚀 Version 1 - CI/CD Working";
+    display: block;
+    text-align: center;
+    background: #ffcc00;
+    color: black;
+    padding: 10px;
+    font-weight: bold;
+}
