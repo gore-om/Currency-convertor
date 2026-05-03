@@ -12,7 +12,7 @@ pipeline {
 
         stage('Clone Code') {
             steps {
-                git 'https://github.com/gore-om/Currency-convertor.git'
+                git branch: 'main', url: 'https://github.com/gore-om/Currency-convertor.git'
             }
         }
 
@@ -24,17 +24,32 @@ pipeline {
 
         stage('Push to ACR') {
             steps {
-                sh '''
-                az acr login --name $ACR_NAME
-                docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:latest
-                '''
+                withCredentials([
+                    string(credentialsId: 'azure-client-id', variable: 'AZ_CLIENT_ID'),
+                    string(credentialsId: 'azure-client-secret', variable: 'AZ_CLIENT_SECRET'),
+                    string(credentialsId: 'azure-tenant-id', variable: 'AZ_TENANT')
+                ]) {
+                    sh '''
+                    az login --service-principal \
+                      -u $AZ_CLIENT_ID \
+                      -p $AZ_CLIENT_SECRET \
+                      --tenant $AZ_TENANT
+
+                    az acr login --name $ACR_NAME
+                    docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:latest
+                    '''
+                }
             }
         }
 
         stage('Deploy to AKS') {
             steps {
                 sh '''
-                az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER --overwrite-existing
+                az aks get-credentials \
+                  --resource-group $RESOURCE_GROUP \
+                  --name $AKS_CLUSTER \
+                  --overwrite-existing
+
                 kubectl apply -f deployment.yaml
                 kubectl apply -f service.yaml
                 '''
