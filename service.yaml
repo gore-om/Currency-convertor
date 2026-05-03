@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: currency-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: currency-app
   ports:
