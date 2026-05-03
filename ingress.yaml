@@ -4,8 +4,15 @@ metadata:
   name: currency-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: nginx
+
+  tls:
+  - hosts:
+    - riskybusiness.online
+    secretName: tls-secret
+
   rules:
   - host: riskybusiness.online
     http:
