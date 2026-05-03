@@ -7,7 +7,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: currency.local
+  - host: riskybusiness.online
     http:
       paths:
       - path: /
