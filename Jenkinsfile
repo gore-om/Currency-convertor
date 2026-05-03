@@ -22,7 +22,7 @@ pipeline {
             }
         }
 
-        stage('Push to ACR') {
+        stage('Azure Login & Push to ACR') {
             steps {
                 withCredentials([
                     string(credentialsId: 'azure-client-id', variable: 'AZ_CLIENT_ID'),
@@ -30,12 +30,17 @@ pipeline {
                     string(credentialsId: 'azure-tenant-id', variable: 'AZ_TENANT')
                 ]) {
                     sh '''
+                    echo "Logging into Azure using Service Principal..."
+
                     az login --service-principal \
                       -u $AZ_CLIENT_ID \
                       -p $AZ_CLIENT_SECRET \
                       --tenant $AZ_TENANT
 
+                    echo "Login successful"
+
                     az acr login --name $ACR_NAME
+
                     docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:latest
                     '''
                 }
@@ -45,10 +50,14 @@ pipeline {
         stage('Deploy to AKS') {
             steps {
                 sh '''
+                echo "Getting AKS credentials..."
+
                 az aks get-credentials \
                   --resource-group $RESOURCE_GROUP \
                   --name $AKS_CLUSTER \
                   --overwrite-existing
+
+                echo "Deploying to AKS..."
 
                 kubectl apply -f deployment.yaml
                 kubectl apply -f service.yaml
