@@ -1,19 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
   name: currency-app
+
 spec:
   replicas: 2
+
   selector:
     matchLabels:
       app: currency-app
+
   template:
     metadata:
       labels:
         app: currency-app
+
     spec:
       containers:
       - name: currency-app
-        image: ogcccr.azurecr.io/myapp:latest
+
+        image: ogccr.azurecr.io/myapp:latest
+
+        imagePullPolicy: Always
+
         ports:
         - containerPort: 80
