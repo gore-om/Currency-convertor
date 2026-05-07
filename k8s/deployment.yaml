@@ -20,7 +20,7 @@ spec:
       containers:
       - name: currency-app
 
-        image: ogccr.azurecr.io/myapp:latest
+        image: ogccr.azurecr.io/currency-app:latest
 
         imagePullPolicy: Always
 
